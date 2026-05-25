@@ -1,7 +1,7 @@
 import { AgentResponse, ChatChip, ChatLink, DishFlags, SendPayload, flagsToTags } from "@/types/huevito";
 
 const API_URL =
-  "https://qebe12jyff.execute-api.us-east-1.amazonaws.com/dev/chat";
+  "https://qebe12jyff.execute-api.us-east-1.amazonaws.com/prod/chat";
 
 const SESSION_ID_TIMEZONE = "America/Mexico_City";
 

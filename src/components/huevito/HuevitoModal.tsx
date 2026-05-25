@@ -44,10 +44,6 @@ export function HuevitoModal({ isOpen, onClose }: HuevitoModalProps) {
   }, [isOpen]);
 
   const handleChip = (chip: ChatChip) => {
-    if (chip.value === "__upload__") {
-      inputRef.current?.triggerUpload();
-      return;
-    }
     sendMessage({ text: chip.value });
   };
 

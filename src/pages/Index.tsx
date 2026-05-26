@@ -34,6 +34,7 @@ const Index = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [showTop, setShowTop] = useState(false);
   const [showGreeting, setShowGreeting] = useState(true);
+  const [videoOpen, setVideoOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const pdf = usePdfViewer();
   const reopenChatAfterPdf = useRef(false);
@@ -302,26 +303,26 @@ const Index = () => {
             </p>
           </div>
 
-          <div className="grid gap-5 sm:gap-6 mt-10 max-w-2xl mx-auto">
-            {[
-              {
-                title: "Escribe el nombre",
-                icon: <MessageCircle className="w-6 h-6" />,
-                placeholder: "[ GIF demo: usuario escribiendo el platillo ]",
-              },
-            ].map((item) => (
-              <div key={item.title} className="card-warm p-5 sm:p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="w-10 h-10 rounded-xl bg-brand-cream text-brand-orange grid place-items-center">
-                    {item.icon}
-                  </span>
-                  <h3 className="font-display text-xl text-brand-brown font-bold">{item.title}</h3>
-                </div>
-                <div className="aspect-video rounded-2xl bg-brand-cream border-2 border-dashed border-huevito-border grid place-items-center text-center px-4">
-                  <p className="text-brand-brown-soft text-sm sm:text-base font-medium">{item.placeholder}</p>
+          <div className="flex justify-center mt-10">
+            <div className="card-warm p-3 sm:p-4 cursor-pointer group w-full max-w-[280px] sm:max-w-xs" onClick={() => setVideoOpen(true)}>
+              <div className="aspect-[9/20] rounded-2xl overflow-hidden bg-brand-cream relative">
+                <video
+                  src="/huevito-demo.mp4"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/20 transition-colors duration-300">
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white/90 shadow-lg grid place-items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 scale-90 group-hover:scale-100">
+                    <svg className="w-6 h-6 sm:w-7 sm:h-7 text-brand-brown ml-1" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  </div>
                 </div>
               </div>
-            ))}
+            </div>
           </div>
         </section>
 
@@ -468,6 +469,35 @@ const Index = () => {
       <HuevitoFab onClick={() => setOpen(true)} showPulse={!open} />
       <HuevitoModal isOpen={open} onClose={() => setOpen(false)} />
       {pdf.url && <PdfViewer url={pdf.url} label={pdf.label} onClose={handleClosePdf} />}
+
+      {/* Video lightbox */}
+      {videoOpen && (
+        <div
+          className="fixed inset-0 z-[2147483646] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={() => setVideoOpen(false)}
+        >
+          <div className="relative w-full max-w-xs sm:max-w-sm aspect-[9/20] rounded-2xl overflow-hidden shadow-2xl">
+            <video
+              src="/huevito-demo.mp4"
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-full object-cover"
+            />
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setVideoOpen(false);
+              }}
+              className="absolute top-3 right-3 w-10 h-10 rounded-full bg-black/50 text-white grid place-items-center hover:bg-black/70 transition-colors"
+              aria-label="Cerrar video"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

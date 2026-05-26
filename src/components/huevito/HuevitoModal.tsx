@@ -61,8 +61,8 @@ export function HuevitoModal({ isOpen, onClose }: HuevitoModalProps) {
         {/* Header */}
         <header className="flex items-center justify-between gap-3 px-4 sm:px-5 py-3 sm:py-4 bg-gradient-warm text-white border-b border-brand-orange-deep/20 flex-shrink-0">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-white/95 grid place-items-center p-1 flex-shrink-0">
-              <img src={huevitoLogo} alt="Huevito" className="w-full h-full object-contain" />
+            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white grid place-items-center p-1 flex-shrink-0 overflow-hidden ring-1 ring-white/60">
+              <img src={huevitoLogo} alt="Huevito" className="w-full h-full object-contain rounded-full" />
             </div>
             <div className="min-w-0">
               <h2 className="font-display font-bold text-lg sm:text-xl leading-tight truncate">

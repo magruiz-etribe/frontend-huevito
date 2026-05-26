@@ -74,7 +74,7 @@ export interface AgentResponse {
 
 export const GREETING_MESSAGES: string[] = [
   "¡Hola! Me llamo Huevito 🥚. Estoy listo para ayudarte a adaptar tu menú para hacerlo más amigable.",
-  "Escribe el nombre del platillo. Huevito lo adapta y agrega información útil sobre ingredientes, alérgenos y restricciones alimenticias para que más personas puedan entenderlo y disfrutarlo. Dime, ¿Cómo puedo ayudarte hoy?",
+  "Dime, ¿Cómo puedo ayudarte hoy?",
 ];
 
 export const GREETING_TEXT = GREETING_MESSAGES[0];

@@ -21,13 +21,12 @@ export function useHuevitoChat() {
 
   const sendMessage = useCallback(async (payload: SendPayload) => {
     const text = (payload.text || "").trim();
-    if (!text && !payload.image) return;
+    if (!text) return;
 
     const userMsg: ChatMessage = {
       id: uid(),
       role: "user",
       content: text,
-      image: payload.image,
       timestamp: new Date(),
     };
     setMessages((prev) => [...prev, userMsg]);

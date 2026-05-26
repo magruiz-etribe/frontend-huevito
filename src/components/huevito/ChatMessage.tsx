@@ -53,13 +53,6 @@ export function ChatMessage({ message, onChip, chipsDisabled }: ChatMessageProps
 
       {/* Contenido */}
       <div className={`max-w-[85%] sm:max-w-[78%] flex flex-col gap-2 ${isUser ? "items-end" : "items-start"}`}>
-        {/* Imagen subida por el usuario */}
-        {message.image && (
-          <div className="rounded-2xl overflow-hidden border border-huevito-border max-w-[220px] shadow-soft">
-            <img src={message.image} alt="Adjunto" className="w-full h-auto block" />
-          </div>
-        )}
-
         {/* Burbuja de texto */}
         {message.content && (
           <div

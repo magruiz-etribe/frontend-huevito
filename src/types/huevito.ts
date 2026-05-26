@@ -48,7 +48,6 @@ export interface ChatMessage {
   id: string;
   role: ChatRole;
   content: string;
-  image?: string;
   timestamp: Date;
   card?: DishCard;
   cards?: DishCard[];
@@ -60,7 +59,6 @@ export interface ChatMessage {
 
 export interface SendPayload {
   text?: string;
-  image?: string;
 }
 
 export interface AgentResponse {
@@ -74,10 +72,9 @@ export interface AgentResponse {
   needsMoreInfo?: boolean;
 }
 
-
 export const GREETING_MESSAGES: string[] = [
   "¡Hola! Me llamo Huevito 🥚. Estoy listo para ayudarte a adaptar tu menú para hacerlo más amigable.",
-  "Escribe el nombre del platillo. Huevito lo adapta y agrega información útil sobre ingredientes, alérgenos y restricciones alimenticias para que más personas puedan entenderlo y disfrutarlo.",
+  "Escribe el nombre del platillo. Huevito lo adapta y agrega información útil sobre ingredientes, alérgenos y restricciones alimenticias para que más personas puedan entenderlo y disfrutarlo. Dime, ¿Cómo puedo ayudarte hoy?",
 ];
 
 export const GREETING_TEXT = GREETING_MESSAGES[0];
@@ -88,7 +85,6 @@ export const QUICK_STARTERS: ChatChip[] = [
   { label: "¿Cómo registrarme en Yelp?", value: "Dime como registrarme en Yelp" },
   { label: "Dime como registrarme en TripAdvisor", value: "Dime como registrarme en TripAdvisor" },
 ];
-
 
 // Mapea los flags del backend (en inglés) a tags visuales
 export function flagsToTags(flags?: DishFlags): DishTag[] {

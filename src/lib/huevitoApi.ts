@@ -74,11 +74,6 @@ export async function sendToHuevito(payload: SendPayload): Promise<AgentResponse
     menu_del_dia: currentMenuDelDia,
   };
 
-  if (payload.image) {
-    const match = /^data:(.+?);base64,(.*)$/.exec(payload.image);
-    body.image = match ? match[2] : payload.image;
-  }
-
   const res = await fetch(API_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

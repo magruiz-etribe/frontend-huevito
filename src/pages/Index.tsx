@@ -22,19 +22,12 @@ import {
 import { SiGooglemaps, SiYelp, SiTripadvisor } from "react-icons/si";
 
 const PLATFORM_PDFS = {
-  tripadvisor:
-    "https://d1b1gcigbjwv2n.cloudfront.net/Men%C3%BA%20del%20D%C3%ADa%20-%20Tripadvisor.pdf",
-  googlemaps:
-    "https://d1b1gcigbjwv2n.cloudfront.net/Men%C3%BA%20del%20D%C3%ADa%20-%20Google%20Maps.pdf",
+  tripadvisor: "https://d1b1gcigbjwv2n.cloudfront.net/Men%C3%BA%20del%20D%C3%ADa%20-%20Tripadvisor.pdf",
+  googlemaps: "https://d1b1gcigbjwv2n.cloudfront.net/Men%C3%BA%20del%20D%C3%ADa%20-%20Google%20Maps.pdf",
   yelp: "https://d1b1gcigbjwv2n.cloudfront.net/Men%C3%BA%20del%20D%C3%ADa%20-%20Yelp.pdf",
 } as const;
 
-
-type MenuAction =
-  | "open-chat"
-  | "scroll-how"
-  | "scroll-steps"
-  | "scroll-examples";
+type MenuAction = "open-chat" | "scroll-how" | "scroll-steps" | "scroll-examples";
 
 const Index = () => {
   const [open, setOpen] = useState(true); // se abre automáticamente al cargar
@@ -62,7 +55,6 @@ const Index = () => {
     }
   };
 
-
   useEffect(() => {
     const onScroll = () => setShowTop(window.scrollY > 400);
     onScroll();
@@ -84,7 +76,6 @@ const Index = () => {
       clearTimeout(initialHide);
     };
   }, []);
-
 
   // Cerrar el menú al hacer click fuera
   useEffect(() => {
@@ -126,27 +117,16 @@ const Index = () => {
       {/* Header con logo centrado y menú hamburguesa */}
       <header className="px-5 sm:px-8 pt-5 sm:pt-7 relative z-50">
         <div className="max-w-6xl mx-auto flex items-center justify-center relative">
-          <img
-            src={menuDelDiaLogo}
-            alt="Menú del Día"
-            className="h-24 sm:h-32 md:h-40 w-auto"
-          />
+          <img src={menuDelDiaLogo} alt="Menú del Día" className="h-24 sm:h-32 md:h-40 w-auto" />
 
-          <div
-            ref={menuRef}
-            className="absolute right-0 top-1/2 -translate-y-1/2"
-          >
+          <div ref={menuRef} className="absolute right-0 top-1/2 -translate-y-1/2">
             <button
               onClick={() => setMenuOpen((v) => !v)}
               aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
               aria-expanded={menuOpen}
               className="p-3 rounded-2xl bg-white border-2 border-huevito-border text-brand-brown hover:bg-brand-cream transition-colors shadow-soft"
             >
-              {menuOpen ? (
-                <X className="w-6 h-6" />
-              ) : (
-                <MenuIcon className="w-6 h-6" />
-              )}
+              {menuOpen ? <X className="w-6 h-6" /> : <MenuIcon className="w-6 h-6" />}
             </button>
 
             {menuOpen && (
@@ -162,9 +142,7 @@ const Index = () => {
                   <span className="w-9 h-9 rounded-xl bg-gradient-warm grid place-items-center text-white flex-shrink-0">
                     <MessageCircle className="w-5 h-5" />
                   </span>
-                  <span className="font-semibold text-brand-brown">
-                    Empezar a adaptar mi menú
-                  </span>
+                  <span className="font-semibold text-brand-brown">Empezar a adaptar mi menú</span>
                 </button>
                 <button
                   role="menuitem"
@@ -174,9 +152,7 @@ const Index = () => {
                   <span className="w-9 h-9 rounded-xl bg-brand-cream grid place-items-center text-brand-orange flex-shrink-0">
                     <Sparkles className="w-5 h-5" />
                   </span>
-                  <span className="font-semibold text-brand-brown">
-                    ¿Cómo adaptar mi menú?
-                  </span>
+                  <span className="font-semibold text-brand-brown">¿Cómo funciona?</span>
                 </button>
                 <button
                   role="menuitem"
@@ -186,9 +162,7 @@ const Index = () => {
                   <span className="w-9 h-9 rounded-xl bg-brand-cream grid place-items-center text-brand-orange flex-shrink-0">
                     <Tag className="w-5 h-5" />
                   </span>
-                  <span className="font-semibold text-brand-brown">
-                    ¿Cómo empezar a adaptar mi menú?
-                  </span>
+                  <span className="font-semibold text-brand-brown">¿Cómo empezar a adaptar mi menú?</span>
                 </button>
                 <button
                   role="menuitem"
@@ -198,9 +172,7 @@ const Index = () => {
                   <span className="w-9 h-9 rounded-xl bg-brand-cream grid place-items-center text-brand-orange flex-shrink-0">
                     <ImageIcon className="w-5 h-5" />
                   </span>
-                  <span className="font-semibold text-brand-brown">
-                    Ejemplos de menús amigables
-                  </span>
+                  <span className="font-semibold text-brand-brown">Ejemplos de menús amigables</span>
                 </button>
                 <a
                   role="menuitem"
@@ -210,12 +182,13 @@ const Index = () => {
                   onClick={() => setMenuOpen(false)}
                   className="w-full text-left px-5 py-4 hover:bg-brand-cream transition-colors flex items-center gap-3 border-b border-huevito-border"
                 >
-                  <span className="w-9 h-9 rounded-xl bg-brand-cream grid place-items-center flex-shrink-0" style={{ color: "#1A73E8" }}>
+                  <span
+                    className="w-9 h-9 rounded-xl bg-brand-cream grid place-items-center flex-shrink-0"
+                    style={{ color: "#1A73E8" }}
+                  >
                     <SiGooglemaps className="w-5 h-5" />
                   </span>
-                  <span className="font-semibold text-brand-brown flex-1">
-                    ¿Cómo registrarme en Google Maps?
-                  </span>
+                  <span className="font-semibold text-brand-brown flex-1">¿Cómo registrarme en Google Maps?</span>
                   <ExternalLink className="w-4 h-4 text-brand-brown-soft" />
                 </a>
                 <a
@@ -226,12 +199,13 @@ const Index = () => {
                   onClick={() => setMenuOpen(false)}
                   className="w-full text-left px-5 py-4 hover:bg-brand-cream transition-colors flex items-center gap-3 border-b border-huevito-border"
                 >
-                  <span className="w-9 h-9 rounded-xl bg-brand-cream grid place-items-center flex-shrink-0" style={{ color: "#D32323" }}>
+                  <span
+                    className="w-9 h-9 rounded-xl bg-brand-cream grid place-items-center flex-shrink-0"
+                    style={{ color: "#D32323" }}
+                  >
                     <SiYelp className="w-5 h-5" />
                   </span>
-                  <span className="font-semibold text-brand-brown flex-1">
-                    ¿Cómo registrarme en Yelp?
-                  </span>
+                  <span className="font-semibold text-brand-brown flex-1">¿Cómo registrarme en Yelp?</span>
                   <ExternalLink className="w-4 h-4 text-brand-brown-soft" />
                 </a>
                 <a
@@ -242,15 +216,15 @@ const Index = () => {
                   onClick={() => setMenuOpen(false)}
                   className="w-full text-left px-5 py-4 hover:bg-brand-cream transition-colors flex items-center gap-3"
                 >
-                  <span className="w-9 h-9 rounded-xl bg-brand-cream grid place-items-center flex-shrink-0" style={{ color: "#00AF87" }}>
+                  <span
+                    className="w-9 h-9 rounded-xl bg-brand-cream grid place-items-center flex-shrink-0"
+                    style={{ color: "#00AF87" }}
+                  >
                     <SiTripadvisor className="w-5 h-5" />
                   </span>
-                  <span className="font-semibold text-brand-brown flex-1">
-                    ¿Cómo registrarme en TripAdvisor?
-                  </span>
+                  <span className="font-semibold text-brand-brown flex-1">¿Cómo registrarme en TripAdvisor?</span>
                   <ExternalLink className="w-4 h-4 text-brand-brown-soft" />
                 </a>
-
               </div>
             )}
           </div>
@@ -262,13 +236,11 @@ const Index = () => {
         <section className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8 md:gap-12 items-center">
           <div className="text-center md:text-left order-2 md:order-1">
             <h1 className="font-display text-4xl sm:text-5xl md:text-6xl text-brand-brown leading-[1.05] font-bold">
-              Adapta y traduce tú menú al{" "}
-              <span className="text-brand-orange">inglés</span> en segundos.
+              Adapta tú menú al <span className="text-brand-orange">inglés</span> en segundos.
             </h1>
             <p className="mt-5 text-lg sm:text-xl text-brand-brown-soft max-w-xl mx-auto md:mx-0">
-              Huevito adapta los platillos de tu menú para hacerlo más
-              accesible y fácil de entender para locales y visitantes durante
-              este Mundial.
+              Huevito adapta los platillos de tu menú para hacerlo más accesible y fácil de entender para locales y
+              visitantes durante este Mundial.
             </p>
 
             <div className="mt-7 flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
@@ -296,17 +268,13 @@ const Index = () => {
               {/* Globo de diálogo */}
               <div
                 className={`absolute -top-12 sm:-top-16 -right-6 sm:-right-16 z-10 transition-all duration-500 ease-out ${
-                  showGreeting
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 -translate-y-2 pointer-events-none"
+                  showGreeting ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2 pointer-events-none"
                 }`}
               >
                 <div className="relative bg-white border border-huevito-border rounded-3xl px-5 py-3 shadow-soft">
                   <div className="flex items-center gap-2">
                     <span aria-hidden>👋</span>
-                    <span className="font-semibold text-brand-brown text-sm sm:text-base">
-                      Hola, me llamo Huevito
-                    </span>
+                    <span className="font-semibold text-brand-brown text-sm sm:text-base">Hola, me llamo Huevito</span>
                   </div>
                   {/* Cola del globo apuntando al huevito */}
                   <span
@@ -315,7 +283,6 @@ const Index = () => {
                   />
                 </div>
               </div>
-
 
               <img
                 src={huevitoHero}
@@ -327,30 +294,20 @@ const Index = () => {
         </section>
 
         {/* CÓMO FUNCIONA — GIFs demo */}
-        <section
-          id="como-funciona"
-          className="max-w-6xl mx-auto mt-16 sm:mt-24"
-        >
+        <section id="como-funciona" className="max-w-6xl mx-auto mt-16 sm:mt-24">
           <div className="text-center max-w-2xl mx-auto">
-            <h2 className="font-display text-3xl sm:text-4xl text-brand-orange font-bold">
-              ¿Cómo funciona?
-            </h2>
+            <h2 className="font-display text-3xl sm:text-4xl text-brand-orange font-bold">¿Cómo funciona?</h2>
             <p className="text-brand-brown-soft mt-3 text-lg">
               Sin descargas, sin registros. ¡Funciona desde tu celular! 📱
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 gap-5 sm:gap-6 mt-10">
+          <div className="grid gap-5 sm:gap-6 mt-10 max-w-2xl mx-auto">
             {[
               {
                 title: "Escribe el nombre",
                 icon: <MessageCircle className="w-6 h-6" />,
                 placeholder: "[ GIF demo: usuario escribiendo el platillo ]",
-              },
-              {
-                title: "Envía una foto",
-                icon: <Camera className="w-6 h-6" />,
-                placeholder: "[ GIF demo: usuario enviando foto del platillo ]",
               },
             ].map((item) => (
               <div key={item.title} className="card-warm p-5 sm:p-6">
@@ -358,14 +315,10 @@ const Index = () => {
                   <span className="w-10 h-10 rounded-xl bg-brand-cream text-brand-orange grid place-items-center">
                     {item.icon}
                   </span>
-                  <h3 className="font-display text-xl text-brand-brown font-bold">
-                    {item.title}
-                  </h3>
+                  <h3 className="font-display text-xl text-brand-brown font-bold">{item.title}</h3>
                 </div>
                 <div className="aspect-video rounded-2xl bg-brand-cream border-2 border-dashed border-huevito-border grid place-items-center text-center px-4">
-                  <p className="text-brand-brown-soft text-sm sm:text-base font-medium">
-                    {item.placeholder}
-                  </p>
+                  <p className="text-brand-brown-soft text-sm sm:text-base font-medium">{item.placeholder}</p>
                 </div>
               </div>
             ))}
@@ -375,8 +328,7 @@ const Index = () => {
         {/* PASOS 1·2·3·4 */}
         <section id="pasos" className="max-w-6xl mx-auto mt-20 sm:mt-28">
           <h2 className="font-display text-3xl sm:text-4xl text-brand-brown text-center font-bold">
-            ¿Cómo empezar a{" "}
-            <span className="text-brand-orange">adaptar tu menú</span>?
+            ¿Cómo empezar a <span className="text-brand-orange">adaptar tu menú</span>?
           </h2>
           <p className="text-center text-brand-brown-soft mt-3 text-lg max-w-xl mx-auto">
             Hecho para que cualquier persona pueda usarlo, sin complicaciones.
@@ -409,12 +361,8 @@ const Index = () => {
                 <div className="absolute -top-4 -left-4 w-11 h-11 rounded-2xl bg-gradient-warm text-white grid place-items-center font-display font-bold text-xl shadow-warm">
                   {step.n}
                 </div>
-                <h3 className="font-display text-lg text-brand-brown font-bold mt-2">
-                  {step.title}
-                </h3>
-                <p className="text-brand-brown-soft mt-2 leading-relaxed text-[15px]">
-                  {step.body}
-                </p>
+                <h3 className="font-display text-lg text-brand-brown font-bold mt-2">{step.title}</h3>
+                <p className="text-brand-brown-soft mt-2 leading-relaxed text-[15px]">{step.body}</p>
               </div>
             ))}
           </div>
@@ -427,12 +375,10 @@ const Index = () => {
         <section id="plataformas" className="max-w-6xl mx-auto mt-20 sm:mt-28">
           <div className="text-center max-w-2xl mx-auto">
             <h2 className="font-display text-3xl sm:text-4xl text-brand-brown font-bold">
-              Haz visible tu negocio y{" "}
-              <span className="text-brand-orange">atrae más clientes</span>
+              Haz visible tu negocio y <span className="text-brand-orange">atrae más clientes</span>
             </h2>
             <p className="text-brand-brown-soft mt-3 text-lg">
-              Descarga las infografías y sigue las instrucciones para darte de
-              alta en las plataformas clave.
+              Descarga las infografías y sigue las instrucciones para darte de alta en las plataformas clave.
             </p>
           </div>
 
@@ -470,12 +416,8 @@ const Index = () => {
                 >
                   <Icon className="w-12 h-12 sm:w-14 sm:h-14" />
                 </span>
-                <h3 className="font-display text-xl text-brand-brown font-bold">
-                  {name}
-                </h3>
-                <p className="text-brand-brown-soft text-sm mt-2">
-                  Ver infografía
-                </p>
+                <h3 className="font-display text-xl text-brand-brown font-bold">{name}</h3>
+                <p className="text-brand-brown-soft text-sm mt-2">Ver infografía</p>
                 <span className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-warm text-white text-sm font-semibold shadow-soft">
                   Abrir PDF
                   <ExternalLink className="w-4 h-4" />
@@ -485,14 +427,11 @@ const Index = () => {
           </div>
         </section>
 
-
-
-
         {/* CTA FINAL */}
         <section className="max-w-5xl mx-auto mt-20 sm:mt-28">
           <div className="rounded-3xl overflow-hidden p-8 sm:p-12 text-center bg-gradient-warm relative shadow-warm">
             <h2 className="font-display text-3xl sm:text-4xl text-white font-bold relative">
-              ¡Comencemos a adaptar y traducir tu primer platillo!
+              ¡Comencemos a adaptar tu primer platillo!
             </h2>
             <p className="text-white/95 mt-3 text-lg relative">
               Huevito hará que tu menú sea más accesible para todos.
@@ -501,11 +440,7 @@ const Index = () => {
               onClick={() => setOpen(true)}
               className="mt-7 inline-flex items-center gap-3 px-7 py-4 rounded-2xl bg-white text-brand-orange text-lg font-bold shadow-warm hover:scale-[1.02] active:scale-[0.98] transition-transform relative"
             >
-              <img
-                src={huevitoLogo}
-                alt=""
-                className="w-7 h-7 object-contain"
-              />
+              <img src={huevitoLogo} alt="" className="w-7 h-7 object-contain" />
               Chatea con Huevito
               <ArrowRight className="w-5 h-5" />
             </button>
@@ -532,12 +467,9 @@ const Index = () => {
 
       <HuevitoFab onClick={() => setOpen(true)} showPulse={!open} />
       <HuevitoModal isOpen={open} onClose={() => setOpen(false)} />
-      {pdf.url && (
-        <PdfViewer url={pdf.url} label={pdf.label} onClose={handleClosePdf} />
-      )}
+      {pdf.url && <PdfViewer url={pdf.url} label={pdf.label} onClose={handleClosePdf} />}
     </div>
   );
 };
-
 
 export default Index;

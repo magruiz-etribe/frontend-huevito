@@ -16,6 +16,7 @@ export type ChatRole = "user" | "assistant";
 export interface ChatChip {
   label: string;
   value: string;
+  icon?: string;
 }
 
 export type SpicyLevel = "none" | "mild" | "medium" | "hot" | "very_hot";
@@ -73,17 +74,17 @@ export interface AgentResponse {
 }
 
 export const GREETING_MESSAGES: string[] = [
-  "¡Hola! Me llamo Huevito 🥚. Estoy listo para ayudarte a adaptar tu menú para hacerlo más amigable.",
-  "Dime, ¿Cómo puedo ayudarte hoy?",
+  "¡Hola! Soy Huevito, tu asistente para el **Menú del Día**.",
+  "Estoy aquí para ayudarte a **adaptar tus platillos** para que lleguen de manera clara a clientes extranjeros, también puedo guiarte sobre otros temas digitales para tu negocio o contarte más sobre la iniciativa.",
+  "¿Por dónde quieres empezar?",
 ];
 
 export const GREETING_TEXT = GREETING_MESSAGES[0];
 
 export const QUICK_STARTERS: ChatChip[] = [
-  { label: "Ayúdame a adaptar mi platillo!", value: "Ayúdame a adaptar mi platillo!" },
-  { label: "¿Cómo registrarme en Google Maps?", value: "Dime como registrarme en Google Maps" },
-  { label: "¿Cómo registrarme en Yelp?", value: "Dime como registrarme en Yelp" },
-  { label: "Dime como registrarme en TripAdvisor", value: "Dime como registrarme en TripAdvisor" },
+  { label: "Adaptar un platillo", value: "Ayúdame a adaptar mi platillo!", icon: "ChefHat" },
+  { label: "¿Cómo registrar mi negocio en plataformas digitales?", value: "Dime como registrarme en plataformas digitales", icon: "Globe" },
+  { label: "Iniciativa Menú del Día", value: "Cuéntame sobre la iniciativa Menú del Día", icon: "Info" },
 ];
 
 // Mapea los flags del backend (en inglés) a tags visuales

@@ -1,6 +1,6 @@
 import { ChatChip, ChatLink, ChatMessage as ChatMessageType } from "@/types/huevito";
 import { openPdf } from "@/lib/pdfViewerStore";
-import { ExternalLink, FileText } from "lucide-react";
+import { ChefHat, ExternalLink, FileText, Globe, Info } from "lucide-react";
 import huevitoHero from "@/assets/huevito-hero.png";
 
 
@@ -66,22 +66,6 @@ export function ChatMessage({ message, onChip, chipsDisabled }: ChatMessageProps
           </div>
         )}
 
-        {/* Chips de respuesta rápida */}
-        {message.chips && message.chips.length > 0 && (
-          <div className="flex flex-wrap gap-2 pt-1">
-            {message.chips.map((c, i) => (
-              <button
-                key={i}
-                onClick={() => onChip?.(c)}
-                disabled={chipsDisabled}
-                className="px-4 py-2 rounded-full bg-white border-2 border-brand-orange/30 text-brand-brown text-sm font-semibold hover:bg-brand-cream hover:border-brand-orange transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-soft"
-              >
-                {c.label}
-              </button>
-            ))}
-          </div>
-        )}
-
         {/* Links (page / pdf) */}
         {message.links && message.links.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-1">
@@ -90,9 +74,33 @@ export function ChatMessage({ message, onChip, chipsDisabled }: ChatMessageProps
             )}
           </div>
         )}
+
+        {/* Chips de respuesta rápida */}
+        {message.chips && message.chips.length > 0 && (
+          <div className="flex flex-wrap gap-2 pt-1 w-full">
+            {message.chips.map((c, i) => (
+              <button
+                key={i}
+                onClick={() => onChip?.(c)}
+                disabled={chipsDisabled}
+                className="max-w-full px-4 py-2 rounded-2xl bg-white border-2 border-brand-orange/30 text-brand-brown text-sm font-semibold hover:bg-brand-cream hover:border-brand-orange transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-soft whitespace-normal break-words [overflow-wrap:anywhere] text-left leading-snug inline-flex items-center gap-2"
+              >
+                <ChipIcon chip={c} />
+                {c.label}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
+}
+
+function ChipIcon({ chip }: { chip: ChatChip }) {
+  if (chip.icon === "ChefHat") return <ChefHat className="w-4 h-4 flex-shrink-0" color="#92400E" />;
+  if (chip.icon === "Globe") return <Globe className="w-4 h-4 flex-shrink-0" color="#D97706" />;
+  if (chip.icon === "Info") return <Info className="w-4 h-4 flex-shrink-0" color="#FDE68A" />;
+  return null;
 }
 
 function LinkButton({ link }: { link: ChatLink }) {

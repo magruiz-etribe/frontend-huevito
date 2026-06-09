@@ -26,15 +26,13 @@ const EXAMPLE_DISHES: DishCard[] = [
   {
     name_es: "Guacamole con Totopos",
     name_en: "Guacamole with Tortilla Chips",
-    description_en:
-      "Fresh avocado dip with tomato, onion, cilantro and lime, served with crispy corn tortilla chips.",
+    description_en: "Fresh avocado dip with tomato, onion, cilantro and lime, served with crispy corn tortilla chips.",
     flags: { allergens: false, gluten_free: true, vegetarian: true, vegan: true, spicy_level: "mild" },
   },
   {
     name_es: "Chiles en Nogada",
     name_en: "Chiles in Walnut Sauce",
-    description_en:
-      "Poblano peppers stuffed with picadillo, topped with a creamy walnut sauce and pomegranate seeds.",
+    description_en: "Poblano peppers stuffed with picadillo, topped with a creamy walnut sauce and pomegranate seeds.",
     flags: { allergens: true, gluten_free: true, vegetarian: false, vegan: false, spicy_level: "mild" },
   },
 ];
@@ -48,23 +46,27 @@ export function TranslationsSection({ onStart }: Props) {
     <section id="ejemplos" className="max-w-6xl mx-auto mt-20 sm:mt-28">
       <h2 className="font-display text-3xl sm:text-4xl text-brand-brown text-center font-bold">
         {hasItems ? (
-          <>Tus <span className="text-brand-orange">traducciones</span></>
+          <>
+            Tus <span className="text-brand-orange">adaptaciones</span>
+          </>
         ) : (
-          <>Ejemplos de <span className="text-brand-orange">traducciones</span></>
+          <>
+            Ejemplos de <span className="text-brand-orange">adaptaciones</span>
+          </>
         )}
       </h2>
       <p className="text-center text-brand-brown-soft mt-3 text-lg max-w-2xl mx-auto">
         {hasItems
           ? "Aquí aparecen los platillos que has adaptado con Huevito, listos para hacer tu menú más accesible."
-          : "Te mostramos algunos ejemplos mientras creas los tuyos. En cuanto adaptes un platillo con Huevito, esta sección se actualizará con tus traducciones."}
+          : "Te mostramos algunos ejemplos mientras creas los tuyos. En cuanto adaptes un platillo con Huevito, esta sección se actualizará con tus adaptaciones."}
       </p>
 
       {!hasItems && (
         <div className="mt-6 mx-auto max-w-2xl flex items-start gap-3 rounded-2xl bg-brand-cream border border-huevito-border px-4 py-3">
           <Sparkles className="w-5 h-5 text-brand-orange flex-shrink-0 mt-0.5" />
           <p className="text-sm text-brand-brown-soft">
-            <span className="font-semibold text-brand-brown">Estos son ejemplos.</span>{" "}
-            Cuando adaptes tu primer platillo, esta sección reemplazará los ejemplos por tus traducciones reales.
+            <span className="font-semibold text-brand-brown">Estos son ejemplos.</span> Cuando adaptes tu primer
+            platillo, esta sección reemplazará los ejemplos por tus adaptaciones reales.
           </p>
         </div>
       )}
@@ -73,17 +75,16 @@ export function TranslationsSection({ onStart }: Props) {
         {items.map((dish, idx) => {
           const tags = dish.tags && dish.tags.length > 0 ? dish.tags : flagsToTags(dish.flags);
           return (
-            <article
-              key={`${dish.name_en}-${idx}`}
-              className="card-warm p-5 sm:p-6 relative"
-            >
+            <article key={`${dish.name_en}-${idx}`} className="card-warm p-5 sm:p-6 relative">
               {!hasItems && (
                 <span className="absolute top-3 right-3 text-[10px] uppercase tracking-wide font-bold px-2 py-1 rounded-full bg-brand-cream text-brand-brown-soft border border-huevito-border">
                   Ejemplo
                 </span>
               )}
               <div className="flex items-start gap-3">
-                <span className="text-3xl" aria-hidden>🍽️</span>
+                <span className="text-3xl" aria-hidden>
+                  🍽️
+                </span>
                 <div className="flex-1 pr-16">
                   <h3 className="font-display text-xl text-brand-brown font-bold leading-tight">
                     {dish.name_en || dish.name_es}
@@ -98,7 +99,9 @@ export function TranslationsSection({ onStart }: Props) {
               )}
               {tags.length > 0 && (
                 <div className="flex flex-wrap gap-2 mt-4">
-                  {tags.map((t) => <DishTagBadge key={t} tag={t} />)}
+                  {tags.map((t) => (
+                    <DishTagBadge key={t} tag={t} />
+                  ))}
                 </div>
               )}
               <div className="mt-3">

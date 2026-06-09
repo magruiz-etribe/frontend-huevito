@@ -10,7 +10,7 @@ export interface ChatInputHandle {
   focus: () => void;
 }
 
-const MAX_TEXT = 400;
+const MAX_TEXT = 250;
 
 export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(({ onSend, disabled }, ref) => {
   const [text, setText] = useState("");
@@ -72,9 +72,14 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(({ onSend, 
         </button>
       </div>
 
-      <p className="text-[11px] text-huevito-text-muted mt-2 px-1 hidden sm:block">
-        Pulsa <kbd className="px-1.5 py-0.5 rounded bg-brand-cream border border-huevito-border text-[10px]">Enter</kbd> para enviar · <kbd className="px-1.5 py-0.5 rounded bg-brand-cream border border-huevito-border text-[10px]">Shift+Enter</kbd> para salto de línea
-      </p>
+      <div className="flex items-center justify-between mt-2 px-1">
+        <p className="text-[11px] text-huevito-text-muted hidden sm:block">
+          Pulsa <kbd className="px-1.5 py-0.5 rounded bg-brand-cream border border-huevito-border text-[10px]">Enter</kbd> para enviar · <kbd className="px-1.5 py-0.5 rounded bg-brand-cream border border-huevito-border text-[10px]">Shift+Enter</kbd> para salto de línea
+        </p>
+        <p className="text-[11px] text-huevito-text-muted sm:ml-auto">
+          {text.length}/{MAX_TEXT}
+        </p>
+      </div>
     </div>
   );
 });

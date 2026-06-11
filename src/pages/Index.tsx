@@ -490,13 +490,13 @@ const Index = () => {
                   className="h-10 sm:h-12 lg:h-11 w-auto object-contain shrink-0"
                 />
                 <img
-                  src={PARTNER_LOGOS.tpi}
-                  alt="The Place Institute"
+                  src={PARTNER_LOGOS.amex}
+                  alt="American Express"
                   className="h-12 sm:h-14 lg:h-12 w-auto object-contain shrink-0"
                 />
                 <img
-                  src={PARTNER_LOGOS.amex}
-                  alt="American Express"
+                  src={PARTNER_LOGOS.tpi}
+                  alt="The Place Institute"
                   className="h-12 sm:h-14 lg:h-12 w-auto object-contain shrink-0"
                 />
               </div>

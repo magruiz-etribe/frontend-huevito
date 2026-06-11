@@ -7,6 +7,7 @@ import huevitoHero from "@/assets/huevito-saluda.gif";
 import huevitoLogo from "@/assets/huevito-logo.png";
 import menuDelDiaLogo from "@/assets/menu-del-dia-logo.png";
 
+
 const CDN = "https://d1b1gcigbjwv2n.cloudfront.net";
 const PARTNER_LOGOS = {
   ida: `${CDN}/IDA.png`,

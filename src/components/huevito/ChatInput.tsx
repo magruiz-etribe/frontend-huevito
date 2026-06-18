@@ -80,6 +80,9 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(({ onSend, 
           {text.length}/{MAX_TEXT}
         </p>
       </div>
+      <p className="text-[11px] text-huevito-text-muted mt-2 px-1 leading-snug text-center">
+        Las recomendaciones y traducciones de Huevito son una guía de apoyo para tu negocio. Te sugerimos verificar la información antes de publicarla o compartirla con tus clientes.
+      </p>
     </div>
   );
 });

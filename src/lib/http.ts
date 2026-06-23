@@ -121,7 +121,7 @@ export interface RatingPayload {
 }
 
 export function postRating(payload: RatingPayload) {
-  return apiRequest<{ ok: true; id: string }>("/platillos/rating", {
+  return apiRequest<{ ok: true; id: string }>("/huevito/rating", {
     method: "POST",
     body: payload,
   });

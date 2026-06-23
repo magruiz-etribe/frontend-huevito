@@ -2,6 +2,8 @@ import { useState } from "react";
 import { X, Star } from "lucide-react";
 import { toast } from "sonner";
 import huevitoLogo from "@/assets/huevito-logo.png";
+import { postRating } from "@/lib/http";
+import { getCurrentSessionId } from "@/lib/huevitoApi";
 
 interface RatingModalProps {
   isOpen: boolean;
@@ -12,30 +14,38 @@ interface RatingModalProps {
 export function RatingModal({ isOpen, onClose, onSubmitted }: RatingModalProps) {
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
-  const [fondita, setFondita] = useState("");
-  const [mercado, setMercado] = useState("");
+  const [comentario, setComentario] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   if (!isOpen) return null;
 
-  const canSubmit = rating > 0 && fondita.trim().length > 0 && mercado.trim().length > 0 && !submitting;
+  const canSubmit = rating > 0 && !submitting;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSubmit) return;
     setSubmitting(true);
-    // Mockup: simular envío
-    setTimeout(() => {
-      toast.success("¡Gracias por contestar la encuesta!", {
-        description: "Tu respuesta fue enviada con éxito.",
+    try {
+      await postRating({
+        rating,
+        comentario: comentario.trim() ? comentario.trim().slice(0, 500) : undefined,
+        session_id: getCurrentSessionId(),
+      });
+      toast.success("¡Gracias por tu calificación!", {
+        description: "Tu opinión nos ayuda a mejorar a Huevito.",
       });
       setRating(0);
       setHover(0);
-      setFondita("");
-      setMercado("");
-      setSubmitting(false);
+      setComentario("");
       onSubmitted();
-    }, 400);
+    } catch (err) {
+      console.warn("[postRating] failed:", err);
+      toast.error("No pudimos enviar tu calificación", {
+        description: "Inténtalo de nuevo en un momento.",
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -99,36 +109,23 @@ export function RatingModal({ isOpen, onClose, onSubmitted }: RatingModalProps) 
             </div>
           </div>
 
-          {/* Nombre fondita */}
+          {/* Comentario */}
           <div>
-            <label htmlFor="fondita" className="block text-sm font-semibold text-brand-brown mb-1.5">
-              Nombre de tu fondita
+            <label htmlFor="comentario" className="block text-sm font-semibold text-brand-brown mb-1.5">
+              Comentario <span className="font-normal text-brand-brown-soft">(opcional)</span>
             </label>
-            <input
-              id="fondita"
-              type="text"
-              value={fondita}
-              onChange={(e) => setFondita(e.target.value)}
-              placeholder="Ej. Cocina de la abuela"
-              className="w-full px-4 py-2.5 rounded-xl border-2 border-huevito-border bg-white text-brand-brown placeholder:text-brand-brown-soft/60 focus:outline-none focus:border-brand-orange transition-colors"
-              maxLength={80}
+            <textarea
+              id="comentario"
+              value={comentario}
+              onChange={(e) => setComentario(e.target.value)}
+              placeholder="Ej. Muy útil, me ayudó a adaptar el menú"
+              maxLength={500}
+              rows={3}
+              className="w-full px-4 py-2.5 rounded-xl border-2 border-huevito-border bg-white text-brand-brown placeholder:text-brand-brown-soft/60 focus:outline-none focus:border-brand-orange transition-colors resize-none"
             />
-          </div>
-
-          {/* Mercado */}
-          <div>
-            <label htmlFor="mercado" className="block text-sm font-semibold text-brand-brown mb-1.5">
-              Mercado donde se localiza
-            </label>
-            <input
-              id="mercado"
-              type="text"
-              value={mercado}
-              onChange={(e) => setMercado(e.target.value)}
-              placeholder="Ej. Mercado de Coyoacán"
-              className="w-full px-4 py-2.5 rounded-xl border-2 border-huevito-border bg-white text-brand-brown placeholder:text-brand-brown-soft/60 focus:outline-none focus:border-brand-orange transition-colors"
-              maxLength={80}
-            />
+            <div className="text-right text-xs text-brand-brown-soft mt-1">
+              {comentario.length}/500
+            </div>
           </div>
 
           {/* Enviar */}

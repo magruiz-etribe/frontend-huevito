@@ -45,6 +45,10 @@ export function resetHuevitoSession() {
   currentMenuDelDia = [];
 }
 
+export function getCurrentSessionId(): string {
+  return sessionId;
+}
+
 function menuItemToDishCard(m: MenuItem): DishCard {
   const flags = m.flags as DishFlags | undefined;
   return {

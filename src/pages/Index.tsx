@@ -4,9 +4,12 @@ import { PdfViewer } from "@/components/huevito/PdfViewer";
 import { TranslationsSection } from "@/components/huevito/TranslationsSection";
 import { SignupModal } from "@/components/huevito/SignupModal";
 import { SignupPromptModal } from "@/components/huevito/SignupPromptModal";
+import { RatingModal } from "@/components/huevito/RatingModal";
 import { closePdf, usePdfViewer } from "@/lib/pdfViewerStore";
 import { useTranslations } from "@/lib/translationsStore";
 import { useAuth } from "@/hooks/useAuth";
+import { getYaCalifique } from "@/lib/http";
+import { getCurrentSessionId } from "@/lib/huevitoApi";
 import huevitoHero from "@/assets/huevito-saluda.gif";
 import huevitoLogo from "@/assets/huevito-logo.png";
 import menuDelDiaLogo from "@/assets/menu-del-dia-logo.png";
@@ -59,33 +62,31 @@ const Index = () => {
   const [signupPromptOpen, setSignupPromptOpen] = useState(false);
   const reopenChatAfterPrompt = useRef(false);
   const [signupOpen, setSignupOpen] = useState(false);
+  const [ratingOpen, setRatingOpen] = useState(false);
+  const reopenChatAfterRating = useRef(false);
   const { status: authStatus, refreshCliente } = useAuth();
-  const lastShownCountRef = useRef<number>(
-    (() => {
-      if (typeof window === "undefined") return 0;
-      const v = sessionStorage.getItem("huevito_rating_last_count");
-      return v ? parseInt(v, 10) || 0 : 0;
-    })(),
+  const signupPromptShownRef = useRef<boolean>(
+    typeof window !== "undefined" && sessionStorage.getItem("huevito_signup_prompt_shown") === "1",
+  );
+  const ratingShownRef = useRef<boolean>(
+    typeof window !== "undefined" && sessionStorage.getItem("huevito_rating_shown") === "1",
   );
 
-  // Mostrar modal de calificación en 3, 5, 7, 9... traducciones (cada 2 después de la 3ra)
+  // Mostrar prompt de registro al PRIMER platillo adaptado (sólo si no está autenticado)
   useEffect(() => {
     const count = translations.length;
-    if (count < 3) return;
-    if (count === lastShownCountRef.current) return;
-    const isTrigger = count === 3 || (count > 3 && (count - 3) % 2 === 0);
-    if (!isTrigger) return;
-    // Si el cliente ya está registrado en el backend, no mostramos el prompt
+    if (count < 1) return;
+    if (signupPromptShownRef.current) return;
     if (authStatus === "ready") {
-      lastShownCountRef.current = count;
-      sessionStorage.setItem("huevito_rating_last_count", String(count));
+      signupPromptShownRef.current = true;
+      sessionStorage.setItem("huevito_signup_prompt_shown", "1");
       return;
     }
-    lastShownCountRef.current = count;
-    sessionStorage.setItem("huevito_rating_last_count", String(count));
+    if (authStatus === "loading") return;
+    signupPromptShownRef.current = true;
+    sessionStorage.setItem("huevito_signup_prompt_shown", "1");
     const chatWasOpen = open;
     reopenChatAfterPrompt.current = chatWasOpen;
-    // Esperar 1s para que el usuario alcance a ver el mensaje renderizado en el chat
     const t = window.setTimeout(() => {
       if (chatWasOpen) setOpen(false);
       setSignupPromptOpen(true);
@@ -93,6 +94,45 @@ const Index = () => {
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [translations.length, authStatus]);
+
+  // Si el usuario ya calificó en esta sesión, no mostrar el modal de rating
+  useEffect(() => {
+    if (authStatus !== "ready") return;
+    if (ratingShownRef.current) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const sid = getCurrentSessionId();
+        const res = await getYaCalifique(sid);
+        if (!cancelled && res?.ya_califico) {
+          ratingShownRef.current = true;
+          sessionStorage.setItem("huevito_rating_shown", "1");
+        }
+      } catch {
+        // silencioso: si falla, dejamos el flujo normal
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [authStatus]);
+
+  // Mostrar modal de rating al TERCER platillo adaptado (independiente de autenticación)
+  useEffect(() => {
+    const count = translations.length;
+    if (count < 3) return;
+    if (ratingShownRef.current) return;
+    ratingShownRef.current = true;
+    sessionStorage.setItem("huevito_rating_shown", "1");
+    const chatWasOpen = open;
+    reopenChatAfterRating.current = chatWasOpen;
+    const t = window.setTimeout(() => {
+      if (chatWasOpen) setOpen(false);
+      setRatingOpen(true);
+    }, 1000);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [translations.length]);
 
   const handleDismissPrompt = () => {
     setSignupPromptOpen(false);
@@ -111,6 +151,14 @@ const Index = () => {
     setSignupOpen(false);
     if (reopenChatAfterPrompt.current) {
       reopenChatAfterPrompt.current = false;
+      setOpen(true);
+    }
+  };
+
+  const handleRatingClose = () => {
+    setRatingOpen(false);
+    if (reopenChatAfterRating.current) {
+      reopenChatAfterRating.current = false;
       setOpen(true);
     }
   };
@@ -673,6 +721,11 @@ const Index = () => {
           void refreshCliente();
           handleSignupClose();
         }}
+      />
+      <RatingModal
+        isOpen={ratingOpen}
+        onClose={handleRatingClose}
+        onSubmitted={handleRatingClose}
       />
 
 

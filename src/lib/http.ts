@@ -127,6 +127,13 @@ export function postRating(payload: RatingPayload) {
   });
 }
 
+/** GET /platillos/ya-califique — verifica si el usuario ya calificó en esta sesión. Requiere auth. */
+export function getYaCalifique(sessionId: string) {
+  return apiRequest<{ ya_califico: boolean }>("/platillos/ya-califique", {
+    query: { session_id: sessionId },
+  });
+}
+
 export interface PlatilloHistorial {
   id: string;
   session_id: string;

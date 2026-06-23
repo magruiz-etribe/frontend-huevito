@@ -2,11 +2,14 @@ import { useEffect, useRef, useState } from "react";
 import { HuevitoFab, HuevitoModal } from "@/components/huevito";
 import { PdfViewer } from "@/components/huevito/PdfViewer";
 import { TranslationsSection } from "@/components/huevito/TranslationsSection";
+import { SignupModal } from "@/components/huevito/SignupModal";
+import { SignupPromptModal } from "@/components/huevito/SignupPromptModal";
 import { closePdf, usePdfViewer } from "@/lib/pdfViewerStore";
+import { useTranslations } from "@/lib/translationsStore";
+import { useAuth } from "@/hooks/useAuth";
 import huevitoHero from "@/assets/huevito-saluda.gif";
 import huevitoLogo from "@/assets/huevito-logo.png";
 import menuDelDiaLogo from "@/assets/menu-del-dia-logo.png";
-
 
 const CDN = "https://d1b1gcigbjwv2n.cloudfront.net";
 const PARTNER_LOGOS = {
@@ -30,6 +33,8 @@ import {
   Menu as MenuIcon,
   X,
   ExternalLink,
+  History,
+  UserPlus,
 } from "lucide-react";
 import { SiGooglemaps, SiYelp, SiTripadvisor } from "react-icons/si";
 
@@ -50,6 +55,66 @@ const Index = () => {
   const menuRef = useRef<HTMLDivElement>(null);
   const pdf = usePdfViewer();
   const reopenChatAfterPdf = useRef(false);
+  const translations = useTranslations();
+  const [signupPromptOpen, setSignupPromptOpen] = useState(false);
+  const reopenChatAfterPrompt = useRef(false);
+  const [signupOpen, setSignupOpen] = useState(false);
+  const { status: authStatus, refreshCliente } = useAuth();
+  const lastShownCountRef = useRef<number>(
+    (() => {
+      if (typeof window === "undefined") return 0;
+      const v = sessionStorage.getItem("huevito_rating_last_count");
+      return v ? parseInt(v, 10) || 0 : 0;
+    })(),
+  );
+
+  // Mostrar modal de calificación en 3, 5, 7, 9... traducciones (cada 2 después de la 3ra)
+  useEffect(() => {
+    const count = translations.length;
+    if (count < 3) return;
+    if (count === lastShownCountRef.current) return;
+    const isTrigger = count === 3 || (count > 3 && (count - 3) % 2 === 0);
+    if (!isTrigger) return;
+    // Si el cliente ya está registrado en el backend, no mostramos el prompt
+    if (authStatus === "ready") {
+      lastShownCountRef.current = count;
+      sessionStorage.setItem("huevito_rating_last_count", String(count));
+      return;
+    }
+    lastShownCountRef.current = count;
+    sessionStorage.setItem("huevito_rating_last_count", String(count));
+    const chatWasOpen = open;
+    reopenChatAfterPrompt.current = chatWasOpen;
+    // Esperar 1s para que el usuario alcance a ver el mensaje renderizado en el chat
+    const t = window.setTimeout(() => {
+      if (chatWasOpen) setOpen(false);
+      setSignupPromptOpen(true);
+    }, 1000);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [translations.length, authStatus]);
+
+  const handleDismissPrompt = () => {
+    setSignupPromptOpen(false);
+    if (reopenChatAfterPrompt.current) {
+      reopenChatAfterPrompt.current = false;
+      setOpen(true);
+    }
+  };
+
+  const handleRegisterFromPrompt = () => {
+    setSignupPromptOpen(false);
+    setSignupOpen(true);
+  };
+
+  const handleSignupClose = () => {
+    setSignupOpen(false);
+    if (reopenChatAfterPrompt.current) {
+      reopenChatAfterPrompt.current = false;
+      setOpen(true);
+    }
+  };
+
 
   // Cuando se abre un PDF: cerramos el modal de Huevito y recordamos reabrirlo al cerrar el PDF
   useEffect(() => {
@@ -256,20 +321,30 @@ const Index = () => {
               visitantes durante este Mundial.
             </p>
 
-            <div className="mt-7 flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
-              <button
-                onClick={() => setOpen(true)}
-                className="group inline-flex items-center justify-center gap-2 px-7 py-4 rounded-2xl bg-gradient-warm text-white text-lg font-bold shadow-warm hover:scale-[1.02] active:scale-[0.98] transition-transform"
-              >
-                Empezar a chatear
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </button>
-              <button
-                onClick={() => scrollTo("como-funciona")}
-                className="inline-flex items-center justify-center gap-2 px-7 py-4 rounded-2xl bg-white border-2 border-huevito-border text-brand-brown text-lg font-bold hover:bg-brand-cream transition-colors"
-              >
-                Ver cómo funciona
-              </button>
+            <div className="mt-7 flex flex-col gap-3 items-center md:items-start">
+              <div className="flex flex-col sm:flex-row gap-3 justify-center md:justify-start w-full sm:w-auto">
+                <button
+                  onClick={() => setOpen(true)}
+                  className="group inline-flex items-center justify-center gap-2 px-7 py-4 rounded-2xl bg-gradient-warm text-white text-lg font-bold shadow-warm hover:scale-[1.02] active:scale-[0.98] transition-transform"
+                >
+                  Empezar a chatear
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </button>
+                <button
+                  onClick={() => scrollTo("como-funciona")}
+                  className="inline-flex items-center justify-center gap-2 px-7 py-4 rounded-2xl bg-white border-2 border-huevito-border text-brand-brown text-lg font-bold hover:bg-brand-cream transition-colors"
+                >
+                  Ver cómo funciona
+                </button>
+              </div>
+              {authStatus !== "ready" && (
+                <button
+                  onClick={() => setSignupOpen(true)}
+                  className="inline-flex items-center justify-center gap-2 px-8 py-4 md:px-10 md:py-5 rounded-2xl bg-white border-2 border-brand-orange text-brand-orange text-lg md:text-xl font-bold hover:bg-brand-orange hover:text-white transition-colors w-full sm:w-auto"
+                >
+                  ¡Únete a nuestra comunidad!
+                </button>
+              )}
             </div>
           </div>
 
@@ -390,6 +465,35 @@ const Index = () => {
 
         {/* TUS TRADUCCIONES */}
         <TranslationsSection onStart={() => setOpen(true)} />
+
+        {/* CREA TU CUENTA */}
+        {authStatus !== "ready" && (
+        <section id="registro" className="max-w-5xl mx-auto mt-20 sm:mt-28">
+          <div className="card-warm p-7 sm:p-10 relative overflow-hidden">
+            <div className="grid md:grid-cols-[auto,1fr,auto] items-center gap-6 md:gap-8">
+              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-warm grid place-items-center text-white shadow-warm mx-auto md:mx-0">
+                <History className="w-10 h-10 sm:w-12 sm:h-12" />
+              </div>
+              <div className="text-center md:text-left">
+                <h2 className="font-display text-2xl sm:text-3xl text-brand-brown font-bold">
+                  No pierdas tus <span className="text-brand-orange">platillos adaptados</span>
+                </h2>
+                <p className="text-brand-brown-soft mt-2 text-base sm:text-lg">
+                  Crea una cuenta gratis y accede al historial de todos los platillos que has adaptado con Huevito,
+                  cuando quieras y desde cualquier dispositivo.
+                </p>
+              </div>
+              <button
+                onClick={() => setSignupOpen(true)}
+                className="inline-flex items-center justify-center gap-2 px-6 py-4 rounded-2xl bg-gradient-warm text-white text-base font-bold shadow-warm hover:scale-[1.02] active:scale-[0.98] transition-transform whitespace-nowrap mx-auto md:mx-0"
+              >
+                <UserPlus className="w-5 h-5" />
+                Crear cuenta
+              </button>
+            </div>
+          </div>
+        </section>
+        )}
 
         {/* HAZTE VISIBLE — Infografías de plataformas */}
         <section id="plataformas" className="max-w-6xl mx-auto mt-20 sm:mt-28">
@@ -557,6 +661,20 @@ const Index = () => {
       <HuevitoFab onClick={() => setOpen(true)} showPulse={!open} />
       <HuevitoModal isOpen={open} onClose={() => setOpen(false)} />
       {pdf.url && <PdfViewer url={pdf.url} label={pdf.label} onClose={handleClosePdf} />}
+      <SignupPromptModal
+        isOpen={signupPromptOpen}
+        onRegister={handleRegisterFromPrompt}
+        onDismiss={handleDismissPrompt}
+      />
+      <SignupModal
+        isOpen={signupOpen}
+        onClose={handleSignupClose}
+        onSubmitted={() => {
+          void refreshCliente();
+          handleSignupClose();
+        }}
+      />
+
 
       {/* Video lightbox */}
       {videoOpen && (

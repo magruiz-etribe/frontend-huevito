@@ -1,4 +1,7 @@
-import { AgentResponse, ChatChip, ChatLink, DishFlags, SendPayload, flagsToTags } from "@/types/huevito";
+import { AgentResponse, ChatChip, ChatLink, DishCard, DishFlags, SendPayload, flagsToTags } from "@/types/huevito";
+import { auth } from "./firebase";
+import { getMenus, postMenus, type MenuItem, type MenuItemInput } from "./http";
+import { addTranslations } from "./translationsStore";
 
 const API_URL =
   "https://qebe12jyff.execute-api.us-east-1.amazonaws.com/prod/chat";
@@ -41,6 +44,50 @@ export function resetHuevitoSession() {
   currentDishes = [];
   currentFlags = undefined;
   currentMenuDelDia = [];
+}
+
+function menuItemToDishCard(m: MenuItem): DishCard {
+  const flags = m.flags as DishFlags | undefined;
+  return {
+    name_es: m.name_es,
+    name_en: m.name_en,
+    description_es: m.description_es,
+    description_en: m.description_en,
+    flags,
+    tags: flagsToTags(flags),
+  };
+}
+
+/** Trae el menú completo del cliente desde el backend y lo carga en el store. */
+export async function loadMenuFromBackend(): Promise<void> {
+  if (!auth.currentUser) return;
+  try {
+    const res = await getMenus();
+    const items = res?.items ?? [];
+    if (items.length === 0) return;
+    addTranslations(items.map(menuItemToDishCard));
+  } catch (err) {
+    console.warn("[loadMenuFromBackend] failed:", err);
+  }
+}
+
+/** Envía el menú adaptado actual al backend (si hay) y recarga el historial completo. */
+export async function syncCurrentMenuToBackend(): Promise<void> {
+  const items: MenuItemInput[] = currentMenuDelDia
+    .filter((d) => d && d.name_es && d.name_en)
+    .map((d) => ({
+      name_es: d.name_es as string,
+      name_en: d.name_en as string,
+      description_es: d.description_es,
+      description_en: d.description_en,
+      flags: d.flags as MenuItemInput["flags"],
+    }));
+  try {
+    if (items.length > 0) await postMenus(items);
+  } catch (err) {
+    console.warn("[syncCurrentMenuToBackend] failed:", err);
+  }
+  await loadMenuFromBackend();
 }
 
 interface BackendDish {
@@ -94,6 +141,24 @@ export async function sendToHuevito(payload: SendPayload): Promise<AgentResponse
   const isNewMenu = incomingMenu.length > 0 && newMenuKey !== prevMenuKey;
   if (incomingMenu.length > 0) currentMenuDelDia = incomingMenu;
   if (data.session_id) sessionId = data.session_id;
+
+  // Si hay menú nuevo y el usuario está autenticado, persiste en backend y refresca historial.
+  if (isNewMenu && auth.currentUser) {
+    const items: MenuItemInput[] = incomingMenu
+      .filter((d) => d && d.name_es && d.name_en)
+      .map((d) => ({
+        name_es: d.name_es as string,
+        name_en: d.name_en as string,
+        description_es: d.description_es,
+        description_en: d.description_en,
+        flags: d.flags as MenuItemInput["flags"],
+      }));
+    if (items.length > 0) {
+      void postMenus(items)
+        .catch((err) => console.warn("[postMenus] failed:", err))
+        .then(() => loadMenuFromBackend());
+    }
+  }
 
   const replies = (Array.isArray(data.response)
     ? data.response

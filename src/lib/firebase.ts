@@ -9,12 +9,12 @@ import {
 } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDrzToshpWB1A9t174xqm99l0E95qB53PY",
-  authDomain: "etribe-huevito-prod.firebaseapp.com",
-  projectId: "etribe-huevito-prod",
-  storageBucket: "etribe-huevito-prod.firebasestorage.app",
-  messagingSenderId: "665270481829",
-  appId: "1:665270481829:web:b8457b650ec83e0690ae4c",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
 export const firebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig);

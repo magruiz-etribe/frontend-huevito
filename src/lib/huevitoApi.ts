@@ -3,8 +3,7 @@ import { auth } from "./firebase";
 import { getMenus, postMenus, type MenuItem, type MenuItemInput } from "./http";
 import { addTranslations } from "./translationsStore";
 
-const API_URL =
-  "https://qebe12jyff.execute-api.us-east-1.amazonaws.com/prod/chat";
+const API_URL = import.meta.env.VITE_HUEVITO_API_URL;
 
 const SESSION_ID_TIMEZONE = "America/Mexico_City";
 

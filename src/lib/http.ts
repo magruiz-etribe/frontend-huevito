@@ -1,6 +1,6 @@
 import { getIdToken, signOut } from "./firebase";
 
-export const API_BASE_URL = "https://pb0dwjw1sb.execute-api.us-east-1.amazonaws.com";
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export class ApiError extends Error {
   status: number;

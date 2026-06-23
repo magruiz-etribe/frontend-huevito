@@ -118,7 +118,7 @@ Se llama al cargar la app si Firebase ya tiene sesión, para saber si el usuario
 
 ---
 
-### 2.3 `POST /platillos/rating`
+### 2.3 `POST /huevito/rating`
 
 Guarda una calificación de un platillo adaptado. Reemplaza el flujo actual de calificación local.
 

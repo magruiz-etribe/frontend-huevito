@@ -63,6 +63,7 @@ const Index = () => {
   const reopenChatAfterPrompt = useRef(false);
   const [signupOpen, setSignupOpen] = useState(false);
   const [ratingOpen, setRatingOpen] = useState(false);
+  const [yaCalificoChecked, setYaCalificoChecked] = useState(false);
   const reopenChatAfterRating = useRef(false);
   const { status: authStatus, refreshCliente } = useAuth();
   const signupPromptShownRef = useRef<boolean>(
@@ -95,10 +96,14 @@ const Index = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [translations.length, authStatus]);
 
-  // Si el usuario ya calificó en esta sesión, no mostrar el modal de rating
+  // Consultar al backend si el usuario ya calificó (persistente entre sesiones)
   useEffect(() => {
-    if (authStatus !== "ready") return;
-    if (ratingShownRef.current) return;
+    if (authStatus === "loading") return;
+    if (authStatus !== "ready") {
+      // Invitado / sin perfil: no podemos consultar, dejar flujo normal
+      setYaCalificoChecked(true);
+      return;
+    }
     let cancelled = false;
     (async () => {
       try {
@@ -107,9 +112,12 @@ const Index = () => {
         if (!cancelled && res?.ya_califico) {
           ratingShownRef.current = true;
           sessionStorage.setItem("huevito_rating_shown", "1");
+          localStorage.setItem("huevito_ya_califico", "1");
         }
       } catch {
         // silencioso: si falla, dejamos el flujo normal
+      } finally {
+        if (!cancelled) setYaCalificoChecked(true);
       }
     })();
     return () => {
@@ -122,6 +130,12 @@ const Index = () => {
     const count = translations.length;
     if (count < 3) return;
     if (ratingShownRef.current) return;
+    if (localStorage.getItem("huevito_ya_califico") === "1") {
+      ratingShownRef.current = true;
+      return;
+    }
+    // Esperar a que termine el check de ya-califique antes de abrir el modal
+    if (!yaCalificoChecked) return;
     ratingShownRef.current = true;
     sessionStorage.setItem("huevito_rating_shown", "1");
     const chatWasOpen = open;
@@ -132,7 +146,8 @@ const Index = () => {
     }, 1000);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [translations.length]);
+  }, [translations.length, yaCalificoChecked]);
+
 
   const handleDismissPrompt = () => {
     setSignupPromptOpen(false);

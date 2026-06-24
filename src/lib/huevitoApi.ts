@@ -119,6 +119,7 @@ export async function sendToHuevito(payload: SendPayload): Promise<AgentResponse
   const body: Record<string, unknown> = {
     session_id: sessionId,
     message: payload.text || "",
+    user: auth.currentUser?.uid ?? "guest",
     current_dishes: currentDishes,
     flags: currentFlags ?? {},
     menu_del_dia: currentMenuDelDia,

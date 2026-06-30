@@ -5,11 +5,14 @@ import huevitoLogo from "@/assets/huevito-logo.png";
 import { auth, signInWithGoogle, signOut } from "@/lib/firebase";
 import { FirebaseError } from "firebase/app";
 import { registerCliente, getMe, ApiError } from "@/lib/http";
+import { openPdf } from "@/lib/pdfViewerStore";
+const AVISO_PRIVACIDAD_URL = "https://d1b1gcigbjwv2n.cloudfront.net/aviso-de-privacidad.pdf";
 
 interface SignupModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmitted?: () => void;
+  mode?: "signup" | "complete";
 }
 
 interface GoogleUser {
@@ -32,7 +35,7 @@ const EMPTY: FormState = {
   direccion: "",
 };
 
-export function SignupModal({ isOpen, onClose, onSubmitted }: SignupModalProps) {
+export function SignupModal({ isOpen, onClose, onSubmitted, mode = "signup" }: SignupModalProps) {
   const [googleUser, setGoogleUser] = useState<GoogleUser | null>(null);
   const [form, setForm] = useState<FormState>(EMPTY);
   const [submitting, setSubmitting] = useState(false);
@@ -112,14 +115,20 @@ export function SignupModal({ isOpen, onClose, onSubmitted }: SignupModalProps) 
     }
   };
 
-  const set = (k: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement>) =>
-    setForm((f) => ({ ...f, [k]: e.target.value }));
+  const set = (k: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value;
+    if (k === "telefono") {
+      value = value.replace(/\D/g, "").slice(0, 10);
+    }
+    setForm((f) => ({ ...f, [k]: value }));
+  };
 
   const canSubmit =
     !!googleUser &&
     form.responsable.trim().length > 1 &&
     form.fonda.trim().length > 1 &&
     form.direccion.trim().length > 3 &&
+    /^\d{10}$/.test(form.telefono) &&
     !submitting;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -130,7 +139,7 @@ export function SignupModal({ isOpen, onClose, onSubmitted }: SignupModalProps) 
       await registerCliente({
         responsable: form.responsable.trim(),
         fonda: form.fonda.trim(),
-        telefono: form.telefono.trim() || undefined,
+        telefono: form.telefono,
         direccion: form.direccion.trim(),
       });
       toast.success("¡Registro exitoso!", {
@@ -163,11 +172,11 @@ export function SignupModal({ isOpen, onClose, onSubmitted }: SignupModalProps) 
   return (
     <div
       className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in"
-      onClick={handleClose}
       role="dialog"
       aria-modal="true"
       aria-label="Registro de usuario"
     >
+
       <div
         className="bg-white rounded-3xl shadow-warm w-full max-w-md overflow-hidden relative max-h-[90vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
@@ -178,7 +187,9 @@ export function SignupModal({ isOpen, onClose, onSubmitted }: SignupModalProps) 
             <img src={huevitoLogo} alt="Huevito" className="w-full h-full object-contain rounded-full" />
           </div>
           <div className="min-w-0 flex-1">
-            <h2 className="font-display font-bold text-xl leading-tight">Crea tu cuenta</h2>
+            <h2 className="font-display font-bold text-xl leading-tight">
+              {mode === "complete" ? "Completa tu perfil" : "Crea tu cuenta"}
+            </h2>
             <p className="text-[13px] text-white/90">
               {googleUser ? "Completa los datos de tu fonda" : "Conéctate con Google para empezar"}
             </p>
@@ -211,6 +222,18 @@ export function SignupModal({ isOpen, onClose, onSubmitted }: SignupModalProps) 
             <p className="text-[11px] text-brand-brown-soft text-center px-2">
               Solo usaremos tu correo para identificarte. No publicaremos nada en tu nombre.
             </p>
+
+            <p className="text-[11px] text-brand-brown-soft text-center px-2">
+              Al registrarte aceptas nuestro{" "}
+              <button
+                type="button"
+                onClick={() => openPdf(AVISO_PRIVACIDAD_URL, "Aviso de Privacidad")}
+                className="text-brand-orange hover:underline font-semibold"
+              >
+                Aviso de Privacidad
+              </button>
+              .
+            </p>
           </div>
         )}
 
@@ -231,26 +254,35 @@ export function SignupModal({ isOpen, onClose, onSubmitted }: SignupModalProps) 
             </div>
 
             {[
-              { id: "responsable", label: "Nombre de la persona responsable", placeholder: "Ej. María López", type: "text", maxLength: 80, required: true },
-              { id: "fonda", label: "Nombre de la fonda o negocio", placeholder: "Ej. Cocina de la abuela", type: "text", maxLength: 80, required: true },
-              { id: "telefono", label: "Teléfono de contacto (opcional)", placeholder: "Ej. 55 1234 5678", type: "tel", maxLength: 20, required: false },
-              { id: "direccion", label: "Dirección", placeholder: "Calle, número, colonia, ciudad", type: "text", maxLength: 160, required: true },
-            ].map((f) => (
-              <div key={f.id}>
-                <label htmlFor={f.id} className="block text-sm font-semibold text-brand-brown mb-1.5">
-                  {f.label}
-                </label>
-                <input
-                  id={f.id}
-                  type={f.type}
-                  value={form[f.id as keyof FormState]}
-                  onChange={set(f.id as keyof FormState)}
-                  placeholder={f.placeholder}
-                  maxLength={f.maxLength}
-                  className="w-full px-4 py-2.5 rounded-xl border-2 border-huevito-border bg-white text-brand-brown placeholder:text-brand-brown-soft/60 focus:outline-none focus:border-brand-orange transition-colors"
-                />
-              </div>
-            ))}
+              { id: "responsable", label: "Nombre de la persona responsable", placeholder: "Ej. María López", type: "text", maxLength: 80, required: true, inputMode: undefined as ("text" | "numeric" | undefined) },
+              { id: "fonda", label: "Nombre de la fonda o negocio", placeholder: "Ej. Cocina de la abuela", type: "text", maxLength: 80, required: true, inputMode: undefined },
+              { id: "telefono", label: "Teléfono de contacto (10 dígitos)", placeholder: "Ej. 5512345678", type: "tel", maxLength: 10, required: true, inputMode: "numeric" as const },
+              { id: "direccion", label: "Dirección", placeholder: "Calle, número, colonia, ciudad", type: "text", maxLength: 160, required: true, inputMode: undefined },
+            ].map((f) => {
+              const value = form[f.id as keyof FormState];
+              const invalidPhone = f.id === "telefono" && value.length > 0 && value.length < 10;
+              return (
+                <div key={f.id}>
+                  <label htmlFor={f.id} className="block text-sm font-semibold text-brand-brown mb-1.5">
+                    {f.label}
+                  </label>
+                  <input
+                    id={f.id}
+                    type={f.type}
+                    inputMode={f.inputMode}
+                    pattern={f.id === "telefono" ? "\\d{10}" : undefined}
+                    value={value}
+                    onChange={set(f.id as keyof FormState)}
+                    placeholder={f.placeholder}
+                    maxLength={f.maxLength}
+                    className={`w-full px-4 py-2.5 rounded-xl border-2 bg-white text-brand-brown placeholder:text-brand-brown-soft/60 focus:outline-none focus:border-brand-orange transition-colors ${invalidPhone ? "border-red-400" : "border-huevito-border"}`}
+                  />
+                  {invalidPhone && (
+                    <p className="text-[11px] text-red-500 mt-1">Ingresa los 10 dígitos del teléfono.</p>
+                  )}
+                </div>
+              );
+            })}
 
             <button
               type="submit"

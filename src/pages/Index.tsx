@@ -5,7 +5,8 @@ import { TranslationsSection } from "@/components/huevito/TranslationsSection";
 import { SignupModal } from "@/components/huevito/SignupModal";
 import { SignupPromptModal } from "@/components/huevito/SignupPromptModal";
 import { RatingModal } from "@/components/huevito/RatingModal";
-import { closePdf, usePdfViewer } from "@/lib/pdfViewerStore";
+import { closePdf, openPdf, usePdfViewer } from "@/lib/pdfViewerStore";
+const AVISO_PRIVACIDAD_URL = "https://d1b1gcigbjwv2n.cloudfront.net/aviso-de-privacidad.pdf";
 import { useTranslations } from "@/lib/translationsStore";
 import { useAuth } from "@/hooks/useAuth";
 import { getYaCalifique } from "@/lib/http";
@@ -147,6 +148,17 @@ const Index = () => {
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [translations.length, yaCalificoChecked]);
+
+  // Si el usuario se autenticó con Google pero no completó el registro, reabrir el modal automáticamente
+  useEffect(() => {
+    if (authStatus !== "needs-profile") return;
+    if (signupOpen) return;
+    if (open) setOpen(false);
+    setSignupOpen(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authStatus]);
+
+
 
 
   const handleDismissPrompt = () => {
@@ -704,8 +716,17 @@ const Index = () => {
         </div>
       </section>
 
-      <footer className="text-center text-sm text-brand-brown-soft pb-6 pt-10 px-4">
-        © {new Date().getFullYear()} Menú del Día · Hecho con 🥚 por Huevito
+      <footer className="text-center text-sm text-brand-brown-soft pb-6 pt-10 px-4 space-y-2">
+        <div>
+          <button
+            type="button"
+            onClick={() => openPdf(AVISO_PRIVACIDAD_URL, "Aviso de Privacidad")}
+            className="text-brand-orange hover:underline font-semibold"
+          >
+            Aviso de Privacidad
+          </button>
+        </div>
+        <div>© {new Date().getFullYear()} Menú del Día · Hecho con 🥚 por Huevito</div>
       </footer>
 
       {/* Widget */}
@@ -732,6 +753,7 @@ const Index = () => {
       <SignupModal
         isOpen={signupOpen}
         onClose={handleSignupClose}
+        mode={authStatus === "needs-profile" ? "complete" : "signup"}
         onSubmitted={() => {
           void refreshCliente();
           handleSignupClose();
